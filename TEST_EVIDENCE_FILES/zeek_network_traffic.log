@@ -1,0 +1,8 @@
+#separator \x09
+#set_separator ,
+#fields ts uid id.orig_h id.orig_p id.resp_h id.resp_p proto service duration orig_bytes resp_bytes conn_state note
+2026-09-18T08:58:12Z Cu4K812Kj81 198.51.100.24 49821 192.168.1.105 3389 tcp rdp 4.21 1240 8920 SF RDP brute-force attempt
+2026-09-18T09:15:25Z Cu9K923Lj92 192.168.1.105 49152 192.168.1.10 88 tcp krb5 0.85 2450 3100 SF Kerberos TGT ticket exchange
+2026-09-18T09:18:02Z Cu1A045Mj03 192.168.1.105 53210 192.168.1.2 53 udp dns 0.04 74 128 SF DNS query for c2-gateway.darkcloud-apt.net
+2026-09-18T09:20:15Z Cu2B156Nj14 192.168.1.105 49321 198.51.100.24 443 tcp ssl 360.12 4580 12040 SF C2 beaconing TLS traffic established
+2026-09-18T09:24:50Z Cu3C267Oj25 192.168.1.105 49450 185.220.101.5 443 tcp ssl 180.45 28450192 1420 SF Bulk exfiltration TLS data transfer to external proxy
