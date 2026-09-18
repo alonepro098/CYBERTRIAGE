@@ -115,6 +115,18 @@ def get_case(case_id: str, db: Session = Depends(get_db)):
         raise HTTPException(status_code=404, detail="Case not found")
     return format_case_response(case_obj, db)
 
+@app.patch("/api/cases/{case_id}/status", response_model=dict)
+def update_case_status(case_id: str, payload: dict, db: Session = Depends(get_db)):
+    case_obj = db.query(Case).filter(Case.id == case_id).first()
+    if not case_obj:
+        raise HTTPException(status_code=404, detail="Case not found")
+    new_status = payload.get("status", "Completed")
+    case_obj.status = new_status
+    case_obj.updated_at = get_utc_now()
+    db.commit()
+    db.refresh(case_obj)
+    return format_case_response(case_obj, db)
+
 # ==================== EVIDENCE API ====================
 
 @app.post("/api/cases/{case_id}/evidence")
