@@ -11,7 +11,7 @@ from fastapi.staticfiles import StaticFiles
 from fastapi.responses import FileResponse, JSONResponse
 from sqlalchemy.orm import Session
 
-from backend.config import BASE_DIR, DATA_DIR, EVIDENCE_DIR, REPORTS_DIR
+from backend.config import BASE_DIR, DATA_DIR, EVIDENCE_DIR, REPORTS_DIR, FRONTEND_DIR
 from backend.database import (
     init_db, get_db, Case, Evidence, Artifact, Event, IOC,
     Relationship, Finding, InvestigationQuery, Report, generate_uuid, get_utc_now
@@ -853,6 +853,15 @@ def global_case_search(case_id: str, q: str = Query(..., min_length=1), db: Sess
             "id": a.id, "category": a.category, "name": a.name, "value": a.value, "source_location": a.source_location
         } for a in artifacts]
     }
+
+# Favicon handler
+@app.get("/favicon.ico", include_in_schema=False)
+@app.get("/favicon.png", include_in_schema=False)
+async def get_favicon():
+    favicon_path = FRONTEND_DIR / "favicon.png"
+    if favicon_path.exists():
+        return FileResponse(favicon_path, media_type="image/png")
+    return JSONResponse({"status": "no favicon"}, status_code=404)
 
 # Mount Frontend static files
 if FRONTEND_DIR.exists():
