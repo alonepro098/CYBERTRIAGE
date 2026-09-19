@@ -67,6 +67,137 @@ export async function renderDashboard(container, activeCase, navigateTo) {
       </div>
     </div>
 
+    <!-- ADVANCE FEATURE: Threat Risk Score Meter & Incident Containment Playbook -->
+    <div style="display:grid; grid-template-columns: 1fr 1.6fr; gap:1.5rem; margin-top:1.25rem; margin-bottom:0.75rem;">
+      
+      <!-- 1. Real-Time Threat Risk Score Speedometer Gauge -->
+      <div class="dfir-card" style="display:flex; flex-direction:column; justify-content:space-between; position:relative; overflow:hidden;">
+        <div class="card-header" style="margin-bottom:0.5rem;">
+          <div class="card-title">
+            <i class="fa-solid fa-gauge-high" style="color:var(--sev-critical);"></i>
+            Incident Threat Risk Score
+          </div>
+          <span class="badge badge-critical" id="risk-badge-text" style="font-size:0.68rem; animation: pulse 2s infinite;">CALCULATING...</span>
+        </div>
+
+        <div style="display:flex; align-items:center; justify-content:center; flex-direction:column; padding:0.5rem 0;">
+          <!-- Speedometer SVG Dial -->
+          <div style="position:relative; width:200px; height:110px; display:flex; justify-content:center; align-items:flex-end;">
+            <svg viewBox="0 0 200 110" width="200" height="110" style="overflow:visible;">
+              <!-- Background Arc -->
+              <path d="M 20 100 A 80 80 0 0 1 180 100" fill="none" stroke="rgba(255,255,255,0.08)" stroke-width="16" stroke-linecap="round"/>
+              <!-- Colored Progress Arc -->
+              <defs>
+                <linearGradient id="gauge-grad" x1="0%" y1="0%" x2="100%" y2="0%">
+                  <stop offset="0%" stop-color="#10B981" />
+                  <stop offset="35%" stop-color="#F59E0B" />
+                  <stop offset="70%" stop-color="#F97316" />
+                  <stop offset="100%" stop-color="#EF4444" />
+                </linearGradient>
+              </defs>
+              <path id="gauge-progress-path" d="M 20 100 A 80 80 0 0 1 180 100" fill="none" stroke="url(#gauge-grad)" stroke-width="16" stroke-linecap="round" stroke-dasharray="251.3" stroke-dashoffset="35" style="transition: stroke-dashoffset 1.5s ease;"/>
+              <!-- Needle Pointer -->
+              <line id="gauge-needle" x1="100" y1="100" x2="100" y2="35" stroke="#FFF" stroke-width="3" stroke-linecap="round" style="transform-origin: 100px 100px; transform: rotate(65deg); transition: transform 1.5s cubic-bezier(0.34, 1.56, 0.64, 1); filter: drop-shadow(0 0 4px rgba(255,255,255,0.8));" />
+              <circle cx="100" cy="100" r="7" fill="#FFF" />
+              <circle cx="100" cy="100" r="3" fill="#0F172A" />
+            </svg>
+            <div style="position:absolute; bottom:0; text-align:center;">
+              <span id="risk-score-number" style="font-size:1.85rem; font-weight:900; color:#FFF; font-family:'JetBrains Mono', monospace;">88</span>
+              <span style="font-size:0.9rem; color:var(--text-muted); font-weight:700;">/100</span>
+            </div>
+          </div>
+          
+          <div style="margin-top:0.75rem; text-align:center;">
+            <div id="risk-level-headline" style="font-size:0.875rem; font-weight:700; color:var(--sev-critical);">CRITICAL RISK (Active Exfiltration)</div>
+            <div style="font-size:0.725rem; color:var(--text-muted); margin-top:0.15rem;">Automated composite score based on IOC threat weights & privilege escalation.</div>
+          </div>
+        </div>
+
+        <div style="display:grid; grid-template-columns:1fr 1fr 1fr; gap:0.5rem; border-top:1px solid var(--border-color); padding-top:0.75rem; font-size:0.7rem;">
+          <div style="text-align:center;">
+            <div style="color:var(--text-muted);">Initial Vector</div>
+            <div style="font-weight:700; color:var(--sev-high);">RDP Brute Force</div>
+          </div>
+          <div style="text-align:center; border-left:1px solid var(--border-color); border-right:1px solid var(--border-color);">
+            <div style="color:var(--text-muted);">Exfiltration</div>
+            <div style="font-weight:700; color:var(--sev-critical);">28.4 MB (TLS C2)</div>
+          </div>
+          <div style="text-align:center;">
+            <div style="color:var(--text-muted);">Ransomware</div>
+            <div style="font-weight:700; color:var(--sev-medium);">.locked Staged</div>
+          </div>
+        </div>
+      </div>
+
+      <!-- 2. Live Incident Containment Playbook & Action Checklist -->
+      <div class="dfir-card" style="display:flex; flex-direction:column; justify-content:space-between;">
+        <div class="card-header" style="margin-bottom:0.5rem;">
+          <div class="card-title">
+            <i class="fa-solid fa-shield-halved" style="color:var(--accent-cyan);"></i>
+            Incident Response & Containment Playbook
+          </div>
+          <div id="containment-progress-badge">
+            <span class="badge badge-info" id="containment-count-badge" style="font-size:0.7rem;">0 / 5 Actions Done</span>
+          </div>
+        </div>
+
+        <!-- Containment Progress Bar -->
+        <div style="margin-bottom:0.75rem;">
+          <div style="display:flex; justify-content:space-between; font-size:0.75rem; color:var(--text-secondary); margin-bottom:0.3rem;">
+            <span>Containment Progress: <strong id="containment-percent-text" style="color:var(--accent-cyan);">0%</strong></span>
+            <span id="containment-status-pill" style="color:var(--sev-medium); font-weight:600;"><i class="fa-solid fa-triangle-exclamation"></i> ACTION REQUIRED</span>
+          </div>
+          <div style="width:100%; height:6px; background:rgba(255,255,255,0.08); border-radius:3px; overflow:hidden;">
+            <div id="containment-bar" style="width:0%; height:100%; background:linear-gradient(90deg, var(--accent-cyan), var(--sev-low)); transition:width 0.4s ease;"></div>
+          </div>
+        </div>
+
+        <!-- Interactive Checklist Items -->
+        <div id="containment-checklist-container" style="display:flex; flex-direction:column; gap:0.45rem;">
+          <label class="containment-item" style="display:flex; align-items:center; justify-content:space-between; background:var(--bg-tertiary); padding:0.5rem 0.75rem; border-radius:6px; font-size:0.8rem; cursor:pointer; border:1px solid var(--border-color); transition:all 0.2s;">
+            <div style="display:flex; align-items:center; gap:0.6rem;">
+              <input type="checkbox" class="containment-cb" data-idx="1" style="cursor:pointer; width:15px; height:15px; accent-color:var(--accent-cyan);" />
+              <span class="item-text" style="color:#FFF;"><strong>Block C2 IP:</strong> Quarantine <code>198.51.100.24</code> & <code>185.220.101.5</code> on Firewall</span>
+            </div>
+            <span class="badge badge-critical" style="font-size:0.65rem;">HIGH PRIORITY</span>
+          </label>
+
+          <label class="containment-item" style="display:flex; align-items:center; justify-content:space-between; background:var(--bg-tertiary); padding:0.5rem 0.75rem; border-radius:6px; font-size:0.8rem; cursor:pointer; border:1px solid var(--border-color); transition:all 0.2s;">
+            <div style="display:flex; align-items:center; gap:0.6rem;">
+              <input type="checkbox" class="containment-cb" data-idx="2" style="cursor:pointer; width:15px; height:15px; accent-color:var(--accent-cyan);" />
+              <span class="item-text" style="color:#FFF;"><strong>Revoke User Session:</strong> Invalidate Kerberos TGT token for compromised user <code>analyst01</code></span>
+            </div>
+            <span class="badge badge-high" style="font-size:0.65rem;">URGENT</span>
+          </label>
+
+          <label class="containment-item" style="display:flex; align-items:center; justify-content:space-between; background:var(--bg-tertiary); padding:0.5rem 0.75rem; border-radius:6px; font-size:0.8rem; cursor:pointer; border:1px solid var(--border-color); transition:all 0.2s;">
+            <div style="display:flex; align-items:center; gap:0.6rem;">
+              <input type="checkbox" class="containment-cb" data-idx="3" style="cursor:pointer; width:15px; height:15px; accent-color:var(--accent-cyan);" />
+              <span class="item-text" style="color:#FFF;"><strong>Kill Malicious Process:</strong> Terminate <code>powershell.exe (PID: 4920)</code> & remove backdoor service</span>
+            </div>
+            <span class="badge badge-medium" style="font-size:0.65rem;">ENDPOINT</span>
+          </label>
+
+          <label class="containment-item" style="display:flex; align-items:center; justify-content:space-between; background:var(--bg-tertiary); padding:0.5rem 0.75rem; border-radius:6px; font-size:0.8rem; cursor:pointer; border:1px solid var(--border-color); transition:all 0.2s;">
+            <div style="display:flex; align-items:center; gap:0.6rem;">
+              <input type="checkbox" class="containment-cb" data-idx="4" style="cursor:pointer; width:15px; height:15px; accent-color:var(--accent-cyan);" />
+              <span class="item-text" style="color:#FFF;"><strong>Quarantine Removable USB:</strong> Block USB volume <code>{a482b810...}</code> from enterprise domain</span>
+            </div>
+            <span class="badge badge-info" style="font-size:0.65rem;">HARDWARE</span>
+          </label>
+
+          <label class="containment-item" style="display:flex; align-items:center; justify-content:space-between; background:var(--bg-tertiary); padding:0.5rem 0.75rem; border-radius:6px; font-size:0.8rem; cursor:pointer; border:1px solid var(--border-color); transition:all 0.2s;">
+            <div style="display:flex; align-items:center; gap:0.6rem;">
+              <input type="checkbox" class="containment-cb" data-idx="5" style="cursor:pointer; width:15px; height:15px; accent-color:var(--accent-cyan);" />
+              <span class="item-text" style="color:#FFF;"><strong>Ransomware Rollback:</strong> Isolate <code>WS-FIN-091</code> & initiate Volume Shadow Copy recovery</span>
+            </div>
+            <span class="badge badge-low" style="font-size:0.65rem;">RECOVERY</span>
+          </label>
+        </div>
+      </div>
+
+    </div>
+
     <!-- Main Dashboard Grid Layout -->
     <div style="display:grid; grid-template-columns: 2fr 1fr; gap:1.5rem; margin-top:0.5rem;">
       <!-- Left Column: Timeline Preview & Recent Suspicious Events -->
@@ -215,8 +346,84 @@ export async function renderDashboard(container, activeCase, navigateTo) {
     };
   });
 
+  // Setup Containment Playbook Interactive Logic
+  setupContainmentChecklist(activeCase.id);
+
   // Load Async Card Content
   loadDashboardData(activeCase.id);
+}
+
+function setupContainmentChecklist(caseId) {
+  const storageKey = `cybertriage_containment_${caseId}`;
+  let checkedState = JSON.parse(sessionStorage.getItem(storageKey) || '[]');
+
+  const checkboxes = document.querySelectorAll('.containment-cb');
+  const countBadge = document.getElementById('containment-count-badge');
+  const percentText = document.getElementById('containment-percent-text');
+  const statusPill = document.getElementById('containment-status-pill');
+  const progressBar = document.getElementById('containment-bar');
+
+  function updateUI() {
+    let checkedCount = 0;
+    checkboxes.forEach(cb => {
+      const idx = cb.dataset.idx;
+      const isChecked = checkedState.includes(idx);
+      cb.checked = isChecked;
+      const parentLabel = cb.closest('.containment-item');
+      if (isChecked) {
+        checkedCount++;
+        if (parentLabel) {
+          parentLabel.style.background = 'rgba(16, 185, 129, 0.1)';
+          parentLabel.style.borderColor = 'rgba(16, 185, 129, 0.3)';
+          const textEl = parentLabel.querySelector('.item-text');
+          if (textEl) textEl.style.textDecoration = 'line-through';
+        }
+      } else {
+        if (parentLabel) {
+          parentLabel.style.background = 'var(--bg-tertiary)';
+          parentLabel.style.borderColor = 'var(--border-color)';
+          const textEl = parentLabel.querySelector('.item-text');
+          if (textEl) textEl.style.textDecoration = 'none';
+        }
+      }
+    });
+
+    const percent = Math.round((checkedCount / checkboxes.length) * 100);
+    if (percentText) percentText.textContent = `${percent}%`;
+    if (countBadge) countBadge.textContent = `${checkedCount} / ${checkboxes.length} Actions Done`;
+    if (progressBar) progressBar.style.width = `${percent}%`;
+
+    if (checkedCount === checkboxes.length) {
+      if (statusPill) {
+        statusPill.innerHTML = `<span style="color:var(--sev-low); font-weight:700;"><i class="fa-solid fa-shield-check"></i> 100% CONTAINED</span>`;
+      }
+      if (countBadge) {
+        countBadge.className = 'badge badge-low';
+      }
+    } else {
+      if (statusPill) {
+        statusPill.innerHTML = `<span style="color:var(--sev-medium); font-weight:600;"><i class="fa-solid fa-triangle-exclamation"></i> ACTION REQUIRED</span>`;
+      }
+      if (countBadge) {
+        countBadge.className = 'badge badge-info';
+      }
+    }
+  }
+
+  checkboxes.forEach(cb => {
+    cb.onchange = () => {
+      const idx = cb.dataset.idx;
+      if (cb.checked) {
+        if (!checkedState.includes(idx)) checkedState.push(idx);
+      } else {
+        checkedState = checkedState.filter(i => i !== idx);
+      }
+      sessionStorage.setItem(storageKey, JSON.stringify(checkedState));
+      updateUI();
+    };
+  });
+
+  updateUI();
 }
 
 async function loadDashboardData(caseId) {
@@ -227,6 +434,9 @@ async function loadDashboardData(caseId) {
       API.getIOCs(caseId),
       API.listEvidence(caseId)
     ]);
+
+    // Update dynamic Threat Risk Gauge
+    updateRiskGauge(findingsData, iocs, timeline);
 
     // 1. Timeline Preview
     const timelineEl = document.getElementById('timeline-preview-content');
@@ -340,5 +550,48 @@ async function loadDashboardData(caseId) {
 
   } catch (err) {
     console.error('Error loading dashboard data:', err);
+  }
+}
+
+function updateRiskGauge(findingsData, iocs, timeline) {
+  const findings = findingsData.findings || [];
+  let score = 20; // baseline
+
+  const critFindings = findings.filter(f => f.severity === 'Critical').length;
+  const highFindings = findings.filter(f => f.severity === 'High').length;
+  const suspTimeline = (timeline || []).filter(e => e.is_suspicious).length;
+  const totalIOCs = (iocs || []).length;
+
+  score += (critFindings * 25) + (highFindings * 15) + Math.min(suspTimeline * 2, 20) + Math.min(totalIOCs * 1, 15);
+  score = Math.min(Math.max(score, 15), 96);
+
+  // Speedometer Needle angle: 0 score = -90deg, 100 score = 90deg (Total 180deg sweep)
+  const angle = -90 + (score / 100) * 180;
+  
+  const scoreNumEl = document.getElementById('risk-score-number');
+  const needleEl = document.getElementById('gauge-needle');
+  const badgeTextEl = document.getElementById('risk-badge-text');
+  const levelHeadline = document.getElementById('risk-level-headline');
+
+  if (scoreNumEl) scoreNumEl.textContent = score;
+  if (needleEl) needleEl.style.transform = `rotate(${angle}deg)`;
+
+  if (badgeTextEl && levelHeadline) {
+    if (score >= 75) {
+      badgeTextEl.className = 'badge badge-critical';
+      badgeTextEl.textContent = 'CRITICAL THREAT';
+      levelHeadline.style.color = 'var(--sev-critical)';
+      levelHeadline.textContent = 'CRITICAL RISK (Active Exfiltration & Privilege Escalation)';
+    } else if (score >= 50) {
+      badgeTextEl.className = 'badge badge-high';
+      badgeTextEl.textContent = 'HIGH THREAT';
+      levelHeadline.style.color = 'var(--sev-high)';
+      levelHeadline.textContent = 'HIGH RISK (Suspicious Privilege Reconnaissance)';
+    } else {
+      badgeTextEl.className = 'badge badge-medium';
+      badgeTextEl.textContent = 'ELEVATED';
+      levelHeadline.style.color = 'var(--sev-medium)';
+      levelHeadline.textContent = 'ELEVATED RISK (Preliminary Triage Underway)';
+    }
   }
 }
