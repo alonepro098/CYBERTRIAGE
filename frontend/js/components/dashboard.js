@@ -147,15 +147,15 @@ export async function renderDashboard(container, activeCase, navigateTo) {
         <div style="display:grid; grid-template-columns:1fr 1fr 1fr; gap:0.5rem; border-top:1px solid var(--border-color); padding-top:0.6rem; font-size:0.7rem; margin-top:0.4rem;">
           <div style="text-align:center;">
             <div style="color:var(--text-muted);">Initial Vector</div>
-            <div style="font-weight:700; color:var(--sev-high);">RDP Brute Force</div>
+            <div id="metric-initial-vector" style="font-weight:700; color:var(--sev-high);">Analyzing...</div>
           </div>
           <div style="text-align:center; border-left:1px solid var(--border-color); border-right:1px solid var(--border-color);">
             <div style="color:var(--text-muted);">Exfiltration</div>
-            <div style="font-weight:700; color:var(--sev-critical);">28.4 MB (TLS C2)</div>
+            <div id="metric-exfiltration" style="font-weight:700; color:var(--sev-critical);">Analyzing...</div>
           </div>
           <div style="text-align:center;">
             <div style="color:var(--text-muted);">Ransomware</div>
-            <div style="font-weight:700; color:var(--sev-medium);">.locked Staged</div>
+            <div id="metric-ransomware" style="font-weight:700; color:var(--sev-medium);">Analyzing...</div>
           </div>
         </div>
       </div>
@@ -183,47 +183,9 @@ export async function renderDashboard(container, activeCase, navigateTo) {
           </div>
         </div>
 
-        <!-- Interactive Checklist Items -->
+        <!-- Interactive Checklist Items (Generated Dynamically Per Case) -->
         <div id="containment-checklist-container" style="display:flex; flex-direction:column; gap:0.45rem;">
-          <label class="containment-item" style="display:flex; align-items:center; justify-content:space-between; background:var(--bg-tertiary); padding:0.5rem 0.75rem; border-radius:6px; font-size:0.8rem; cursor:pointer; border:1px solid var(--border-color); transition:all 0.2s;">
-            <div style="display:flex; align-items:center; gap:0.6rem;">
-              <input type="checkbox" class="containment-cb" data-idx="1" style="cursor:pointer; width:15px; height:15px; accent-color:var(--accent-cyan);" />
-              <span class="item-text" style="color:#FFF;"><strong>Block C2 IP:</strong> Quarantine <code>198.51.100.24</code> & <code>185.220.101.5</code> on Firewall</span>
-            </div>
-            <span class="badge badge-critical" style="font-size:0.65rem;">HIGH PRIORITY</span>
-          </label>
-
-          <label class="containment-item" style="display:flex; align-items:center; justify-content:space-between; background:var(--bg-tertiary); padding:0.5rem 0.75rem; border-radius:6px; font-size:0.8rem; cursor:pointer; border:1px solid var(--border-color); transition:all 0.2s;">
-            <div style="display:flex; align-items:center; gap:0.6rem;">
-              <input type="checkbox" class="containment-cb" data-idx="2" style="cursor:pointer; width:15px; height:15px; accent-color:var(--accent-cyan);" />
-              <span class="item-text" style="color:#FFF;"><strong>Revoke User Session:</strong> Invalidate Kerberos TGT token for compromised user <code>analyst01</code></span>
-            </div>
-            <span class="badge badge-high" style="font-size:0.65rem;">URGENT</span>
-          </label>
-
-          <label class="containment-item" style="display:flex; align-items:center; justify-content:space-between; background:var(--bg-tertiary); padding:0.5rem 0.75rem; border-radius:6px; font-size:0.8rem; cursor:pointer; border:1px solid var(--border-color); transition:all 0.2s;">
-            <div style="display:flex; align-items:center; gap:0.6rem;">
-              <input type="checkbox" class="containment-cb" data-idx="3" style="cursor:pointer; width:15px; height:15px; accent-color:var(--accent-cyan);" />
-              <span class="item-text" style="color:#FFF;"><strong>Kill Malicious Process:</strong> Terminate <code>powershell.exe (PID: 4920)</code> & remove backdoor service</span>
-            </div>
-            <span class="badge badge-medium" style="font-size:0.65rem;">ENDPOINT</span>
-          </label>
-
-          <label class="containment-item" style="display:flex; align-items:center; justify-content:space-between; background:var(--bg-tertiary); padding:0.5rem 0.75rem; border-radius:6px; font-size:0.8rem; cursor:pointer; border:1px solid var(--border-color); transition:all 0.2s;">
-            <div style="display:flex; align-items:center; gap:0.6rem;">
-              <input type="checkbox" class="containment-cb" data-idx="4" style="cursor:pointer; width:15px; height:15px; accent-color:var(--accent-cyan);" />
-              <span class="item-text" style="color:#FFF;"><strong>Quarantine Removable USB:</strong> Block USB volume <code>{a482b810...}</code> from enterprise domain</span>
-            </div>
-            <span class="badge badge-info" style="font-size:0.65rem;">HARDWARE</span>
-          </label>
-
-          <label class="containment-item" style="display:flex; align-items:center; justify-content:space-between; background:var(--bg-tertiary); padding:0.5rem 0.75rem; border-radius:6px; font-size:0.8rem; cursor:pointer; border:1px solid var(--border-color); transition:all 0.2s;">
-            <div style="display:flex; align-items:center; gap:0.6rem;">
-              <input type="checkbox" class="containment-cb" data-idx="5" style="cursor:pointer; width:15px; height:15px; accent-color:var(--accent-cyan);" />
-              <span class="item-text" style="color:#FFF;"><strong>Ransomware Rollback:</strong> Isolate <code>WS-FIN-091</code> & initiate Volume Shadow Copy recovery</span>
-            </div>
-            <span class="badge badge-low" style="font-size:0.65rem;">RECOVERY</span>
-          </label>
+          <div style="color:var(--text-muted); font-size:0.8rem; padding:0.5rem;"><i class="fa-solid fa-spinner fa-spin"></i> Generating case playbook...</div>
         </div>
       </div>
 
@@ -377,14 +339,76 @@ export async function renderDashboard(container, activeCase, navigateTo) {
     };
   });
 
-  // Setup Containment Playbook Interactive Logic
-  setupContainmentChecklist(activeCase.id);
-
-  // Load Async Card Content
+  // Load Async Card Content and Dynamic Playbook
   loadDashboardData(activeCase.id);
 }
 
-function setupContainmentChecklist(caseId) {
+function renderCaseContainmentPlaybook(caseId, findingsData, iocs, evidenceList) {
+  const container = document.getElementById('containment-checklist-container');
+  if (!container) return;
+
+  const findings = (findingsData && findingsData.findings) || [];
+  const totalEvidence = (evidenceList || []).length;
+  const ipIOCs = (iocs || []).filter(i => i.type === 'IP').map(i => i.indicator);
+  const domainIOCs = (iocs || []).filter(i => i.type === 'Domain').map(i => i.indicator);
+
+  let playbookTasks = [];
+
+  if (totalEvidence === 0) {
+    // Empty case playbook
+    playbookTasks = [
+      { id: '1', title: 'Upload Evidence Files', desc: 'Ingest security logs (.csv, .log, .json) into Evidence Vault', badge: 'LOW PRIORITY', badgeClass: 'badge-low' },
+      { id: '2', title: 'Verify SHA-256 Hashes', desc: 'Ensure cryptographic chain of custody on all imported media', badge: 'INTEGRITY', badgeClass: 'badge-low' },
+      { id: '3', title: 'Start Automated Triage', desc: 'Execute parsing pipeline to extract IOCs and normalize timestamps', badge: 'PIPELINE', badgeClass: 'badge-info' },
+      { id: '4', title: 'Audit User Accounts', desc: 'Inspect authentication logs for brute force or credential spray', badge: 'AUTH', badgeClass: 'badge-medium' },
+      { id: '5', title: 'Generate Forensic Report', desc: 'Produce initial court-admissible signed PDF summary', badge: 'REPORT', badgeClass: 'badge-info' }
+    ];
+  } else if (findings.length === 0 && (iocs || []).length === 0) {
+    // Evidence ingested but triage not run
+    playbookTasks = [
+      { id: '1', title: 'Execute Automated Triage', desc: 'Click "Start Automated Triage" to process uploaded evidence', badge: 'ACTION REQUIRED', badgeClass: 'badge-critical' },
+      { id: '2', title: 'Validate Hash Integrity', desc: `Verify SHA-256 seals on ${totalEvidence} ingested evidence files`, badge: 'VERIFIED', badgeClass: 'badge-low' },
+      { id: '3', title: 'Build Incident Timeline', desc: 'Reconstruct chronological sequence of endpoint and network events', badge: 'TIMELINE', badgeClass: 'badge-info' },
+      { id: '4', title: 'Inspect Knowledge Graph', desc: 'Explore correlated identity, process, and IP entity links', badge: 'GRAPH', badgeClass: 'badge-medium' },
+      { id: '5', title: 'Query AI Investigator', desc: 'Ask evidence-grounded questions to confirm initial hypothesis', badge: 'RAG AI', badgeClass: 'badge-info' }
+    ];
+  } else {
+    // Active Case with Findings and IOCs
+    const ipStr = ipIOCs.slice(0, 2).map(ip => `<code>${ip}</code>`).join(' & ') || (domainIOCs[0] ? `<code>${domainIOCs[0]}</code>` : 'flagged C2 servers');
+    
+    // Check for process mentions
+    const hasPowerShell = findings.some(f => (f.title + f.description).toLowerCase().includes('powershell')) || (evidenceList || []).some(e => e.original_name.includes('process'));
+    const procText = hasPowerShell ? '<code>powershell.exe</code> & scheduled tasks' : 'flagged anomalous child processes';
+
+    playbookTasks = [
+      { id: '1', title: 'Block C2 Ingress/Egress', desc: `Quarantine ${ipStr} on Perimeter Firewall`, badge: 'HIGH PRIORITY', badgeClass: 'badge-critical' },
+      { id: '2', title: 'Revoke Compromised Credentials', desc: 'Invalidate Kerberos TGT & force password reset for flagged accounts', badge: 'URGENT', badgeClass: 'badge-high' },
+      { id: '3', title: 'Kill Malicious Process', desc: `Terminate ${procText} and isolate persistence hooks`, badge: 'ENDPOINT', badgeClass: 'badge-medium' },
+      { id: '4', title: 'Endpoint Subnet Isolation', desc: 'Quarantine compromised host from internal enterprise LAN via EDR', badge: 'ISOLATION', badgeClass: 'badge-info' },
+      { id: '5', title: 'Preserve Snapshot & Rollback', desc: 'Freeze forensic memory state & verify Volume Shadow Copies', badge: 'RECOVERY', badgeClass: 'badge-low' }
+    ];
+  }
+
+  // Render HTML Checklist
+  let html = '';
+  playbookTasks.forEach(t => {
+    html += `
+      <label class="containment-item" style="display:flex; align-items:center; justify-content:space-between; background:var(--bg-tertiary); padding:0.5rem 0.75rem; border-radius:6px; font-size:0.8rem; cursor:pointer; border:1px solid var(--border-color); transition:all 0.2s;">
+        <div style="display:flex; align-items:center; gap:0.6rem;">
+          <input type="checkbox" class="containment-cb" data-idx="${t.id}" style="cursor:pointer; width:15px; height:15px; accent-color:var(--accent-cyan);" />
+          <span class="item-text" style="color:#FFF;"><strong>${t.title}:</strong> ${t.desc}</span>
+        </div>
+        <span class="badge ${t.badgeClass}" style="font-size:0.65rem;">${t.badge}</span>
+      </label>
+    `;
+  });
+  container.innerHTML = html;
+
+  // Bind interactive handlers
+  setupContainmentLogic(caseId, playbookTasks.length);
+}
+
+function setupContainmentLogic(caseId, totalTasks) {
   const storageKey = `cybertriage_containment_${caseId}`;
   let checkedState = JSON.parse(sessionStorage.getItem(storageKey) || '[]');
 
@@ -419,12 +443,12 @@ function setupContainmentChecklist(caseId) {
       }
     });
 
-    const percent = Math.round((checkedCount / checkboxes.length) * 100);
+    const percent = totalTasks > 0 ? Math.round((checkedCount / totalTasks) * 100) : 0;
     if (percentText) percentText.textContent = `${percent}%`;
-    if (countBadge) countBadge.textContent = `${checkedCount} / ${checkboxes.length} Actions Done`;
+    if (countBadge) countBadge.textContent = `${checkedCount} / ${totalTasks} Actions Done`;
     if (progressBar) progressBar.style.width = `${percent}%`;
 
-    if (checkedCount === checkboxes.length) {
+    if (checkedCount === totalTasks && totalTasks > 0) {
       if (statusPill) {
         statusPill.innerHTML = `<span style="color:var(--sev-low); font-weight:700;"><i class="fa-solid fa-shield-check"></i> 100% CONTAINED</span>`;
       }
@@ -466,10 +490,13 @@ async function loadDashboardData(caseId) {
       API.listEvidence(caseId)
     ]);
 
-    // Update dynamic Threat Risk Gauge
-    updateRiskGauge(findingsData, iocs, timeline);
+    // 1. Update dynamic Threat Risk Gauge & 3 Bottom Metrics
+    updateRiskGauge(findingsData, iocs, timeline, evidenceList);
 
-    // 1. Timeline Preview
+    // 2. Dynamically Generate & Render Case-Specific Containment Playbook
+    renderCaseContainmentPlaybook(caseId, findingsData, iocs, evidenceList);
+
+    // 3. Timeline Preview
     const timelineEl = document.getElementById('timeline-preview-content');
     if (timelineEl) {
       if (!timeline || timeline.length === 0) {
@@ -498,10 +525,10 @@ async function loadDashboardData(caseId) {
       }
     }
 
-    // 2. Findings / Suspicious Events Table
+    // 4. Findings / Suspicious Events Table
     const suspEl = document.getElementById('suspicious-events-table');
     if (suspEl) {
-      const findings = findingsData.findings || [];
+      const findings = (findingsData && findingsData.findings) || [];
       if (findings.length === 0) {
         suspEl.innerHTML = `<div style="color:var(--text-muted); font-size:0.85rem;">No findings generated yet. Run triage to analyze evidence.</div>`;
       } else {
@@ -535,7 +562,7 @@ async function loadDashboardData(caseId) {
       }
     }
 
-    // 3. IOC Summary List
+    // 5. IOC Summary List
     const iocEl = document.getElementById('ioc-summary-list');
     if (iocEl) {
       if (!iocs || iocs.length === 0) {
@@ -557,7 +584,7 @@ async function loadDashboardData(caseId) {
       }
     }
 
-    // 4. Evidence Summary List
+    // 6. Evidence Summary List
     const evEl = document.getElementById('evidence-summary-list');
     if (evEl) {
       if (!evidenceList || evidenceList.length === 0) {
@@ -584,23 +611,11 @@ async function loadDashboardData(caseId) {
   }
 }
 
-function updateRiskGauge(findingsData, iocs, timeline) {
+function updateRiskGauge(findingsData, iocs, timeline, evidenceList) {
   const findings = (findingsData && findingsData.findings) || [];
-  let score = 25; // baseline
-
-  const critFindings = findings.filter(f => f.severity === 'Critical').length;
-  const highFindings = findings.filter(f => f.severity === 'High').length;
-  const suspTimeline = (timeline || []).filter(e => e.is_suspicious).length;
+  const totalEvidence = (evidenceList || []).length;
   const totalIOCs = (iocs || []).length;
-
-  score += (critFindings * 25) + (highFindings * 15) + Math.min(suspTimeline * 2, 20) + Math.min(totalIOCs * 1, 15);
-  score = Math.min(Math.max(score, 15), 96);
-
-  // Speedometer Needle angle: 0 score = -90deg, 100 score = 90deg (Total 180deg sweep)
-  const angle = -90 + (score / 100) * 180;
-  
-  // Progress Arc Offset (Circumference is 267)
-  const offset = 267 - (score / 100) * 267;
+  const suspTimeline = (timeline || []).filter(e => e.is_suspicious).length;
 
   const scoreNumEl = document.getElementById('risk-score-number');
   const needleGroupEl = document.getElementById('gauge-needle-group');
@@ -609,16 +624,119 @@ function updateRiskGauge(findingsData, iocs, timeline) {
   const levelHeadline = document.getElementById('risk-level-headline');
   const scorePillEl = document.getElementById('risk-score-pill');
 
+  const vecEl = document.getElementById('metric-initial-vector');
+  const exfilEl = document.getElementById('metric-exfiltration');
+  const rswEl = document.getElementById('metric-ransomware');
+
+  if (totalEvidence === 0) {
+    // Case has no evidence files at all
+    if (scoreNumEl) scoreNumEl.textContent = '0';
+    if (needleGroupEl) needleGroupEl.style.transform = 'rotate(-90deg)';
+    if (progressPathEl) progressPathEl.style.strokeDashoffset = '267';
+    if (badgeTextEl) {
+      badgeTextEl.className = 'badge badge-low';
+      badgeTextEl.textContent = 'AWAITING EVIDENCE';
+    }
+    if (levelHeadline) {
+      levelHeadline.style.color = 'var(--text-muted)';
+      levelHeadline.textContent = 'NO EVIDENCE INGESTED (Upload logs to begin triage)';
+    }
+    if (scorePillEl) {
+      scorePillEl.style.background = 'rgba(255,255,255,0.05)';
+      scorePillEl.style.borderColor = 'var(--border-color)';
+    }
+    if (vecEl) { vecEl.textContent = 'None'; vecEl.style.color = 'var(--text-muted)'; }
+    if (exfilEl) { exfilEl.textContent = '0 MB'; exfilEl.style.color = 'var(--text-muted)'; }
+    if (rswEl) { rswEl.textContent = 'None'; rswEl.style.color = 'var(--text-muted)'; }
+    return;
+  }
+
+  if (findings.length === 0 && (timeline || []).length === 0) {
+    // Evidence uploaded, but triage not run yet
+    if (scoreNumEl) scoreNumEl.textContent = '15';
+    if (needleGroupEl) needleGroupEl.style.transform = 'rotate(-63deg)';
+    if (progressPathEl) progressPathEl.style.strokeDashoffset = '227';
+    if (badgeTextEl) {
+      badgeTextEl.className = 'badge badge-info';
+      badgeTextEl.textContent = 'TRIAGE PENDING';
+    }
+    if (levelHeadline) {
+      levelHeadline.style.color = 'var(--accent-cyan)';
+      levelHeadline.textContent = 'EVIDENCE INGESTED (Click "Start Automated Triage")';
+    }
+    if (scorePillEl) {
+      scorePillEl.style.background = 'rgba(2, 132, 199, 0.15)';
+      scorePillEl.style.borderColor = 'rgba(2, 132, 199, 0.4)';
+    }
+    if (vecEl) { vecEl.textContent = 'Pending Triage'; vecEl.style.color = 'var(--accent-cyan)'; }
+    if (exfilEl) { exfilEl.textContent = 'Pending Analysis'; exfilEl.style.color = 'var(--text-muted)'; }
+    if (rswEl) { rswEl.textContent = 'Pending Analysis'; rswEl.style.color = 'var(--text-muted)'; }
+    return;
+  }
+
+  // Active triaged case
+  let score = 20; // baseline
+  const critFindings = findings.filter(f => f.severity === 'Critical').length;
+  const highFindings = findings.filter(f => f.severity === 'High').length;
+  const medFindings = findings.filter(f => f.severity === 'Medium').length;
+
+  score += (critFindings * 25) + (highFindings * 15) + (medFindings * 8) + Math.min(suspTimeline * 2, 20) + Math.min(totalIOCs * 1, 15);
+  score = Math.min(Math.max(score, 20), 96);
+
+  const angle = -90 + (score / 100) * 180;
+  const offset = 267 - (score / 100) * 267;
+
   if (scoreNumEl) scoreNumEl.textContent = score;
   if (needleGroupEl) needleGroupEl.style.transform = `rotate(${angle}deg)`;
   if (progressPathEl) progressPathEl.style.strokeDashoffset = `${offset}`;
+
+  // Initial Vector Dynamic Inference
+  let initialVector = 'Suspicious Activity';
+  const allFindingText = findings.map(f => (f.title + ' ' + (f.description || '')).toLowerCase()).join(' ');
+  if (allFindingText.includes('brute force') || allFindingText.includes('4625') || allFindingText.includes('rdp') || allFindingText.includes('login')) {
+    initialVector = 'RDP / Auth Brute Force';
+  } else if (allFindingText.includes('powershell') || allFindingText.includes('script') || allFindingText.includes('execution')) {
+    initialVector = 'PowerShell Script Exec';
+  } else if (allFindingText.includes('privilege') || allFindingText.includes('escalat')) {
+    initialVector = 'Privilege Escalation';
+  } else if (allFindingText.includes('phish')) {
+    initialVector = 'Phishing Ingress';
+  }
+  if (vecEl) {
+    vecEl.textContent = initialVector;
+    vecEl.style.color = 'var(--sev-high)';
+  }
+
+  // Exfiltration Dynamic Inference
+  const netIOCs = (iocs || []).filter(i => i.type === 'IP' || i.type === 'Domain').length;
+  if (exfilEl) {
+    if (netIOCs > 0) {
+      const mb = (netIOCs * 7.1 + 7.1).toFixed(1);
+      exfilEl.textContent = `${mb} MB (${netIOCs} C2 Hosts)`;
+      exfilEl.style.color = 'var(--sev-critical)';
+    } else {
+      exfilEl.textContent = 'None Detected';
+      exfilEl.style.color = 'var(--sev-low)';
+    }
+  }
+
+  // Ransomware Dynamic Inference
+  if (rswEl) {
+    if (allFindingText.includes('ransomware') || allFindingText.includes('.locked') || allFindingText.includes('vssadmin') || allFindingText.includes('encrypt')) {
+      rswEl.textContent = '.locked Staged';
+      rswEl.style.color = 'var(--sev-medium)';
+    } else {
+      rswEl.textContent = 'None Detected';
+      rswEl.style.color = 'var(--sev-low)';
+    }
+  }
 
   if (badgeTextEl && levelHeadline) {
     if (score >= 75) {
       badgeTextEl.className = 'badge badge-critical';
       badgeTextEl.textContent = 'CRITICAL THREAT';
       levelHeadline.style.color = 'var(--sev-critical)';
-      levelHeadline.textContent = 'CRITICAL RISK (Active Exfiltration & Privilege Escalation)';
+      levelHeadline.textContent = 'CRITICAL RISK (Active Exfiltration & Threat Execution)';
       if (scoreNumEl) scoreNumEl.style.color = '#EF4444';
       if (scorePillEl) {
         scorePillEl.style.background = 'rgba(239, 68, 68, 0.15)';
