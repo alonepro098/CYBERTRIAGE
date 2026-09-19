@@ -71,49 +71,80 @@ export async function renderDashboard(container, activeCase, navigateTo) {
     <div style="display:grid; grid-template-columns: 1fr 1.6fr; gap:1.5rem; margin-top:1.25rem; margin-bottom:0.75rem;">
       
       <!-- 1. Real-Time Threat Risk Score Speedometer Gauge -->
-      <div class="dfir-card" style="display:flex; flex-direction:column; justify-content:space-between; position:relative; overflow:hidden;">
-        <div class="card-header" style="margin-bottom:0.5rem;">
-          <div class="card-title">
+      <div class="dfir-card" style="display:flex; flex-direction:column; justify-content:space-between; position:relative; overflow:hidden; border: 1px solid rgba(239, 68, 68, 0.25); background: linear-gradient(180deg, rgba(30, 41, 59, 0.4) 0%, rgba(15, 23, 42, 0.7) 100%);">
+        <div class="card-header" style="margin-bottom:0.25rem; padding-bottom:0.4rem;">
+          <div class="card-title" style="font-size:0.9rem;">
             <i class="fa-solid fa-gauge-high" style="color:var(--sev-critical);"></i>
-            Incident Threat Risk Score
+            Threat Risk Score Gauge
           </div>
           <span class="badge badge-critical" id="risk-badge-text" style="font-size:0.68rem; animation: pulse 2s infinite;">CALCULATING...</span>
         </div>
 
-        <div style="display:flex; align-items:center; justify-content:center; flex-direction:column; padding:0.5rem 0;">
+        <div style="display:flex; align-items:center; justify-content:center; flex-direction:column; padding:0.25rem 0;">
           <!-- Speedometer SVG Dial -->
-          <div style="position:relative; width:200px; height:110px; display:flex; justify-content:center; align-items:flex-end;">
-            <svg viewBox="0 0 200 110" width="200" height="110" style="overflow:visible;">
-              <!-- Background Arc -->
-              <path d="M 20 100 A 80 80 0 0 1 180 100" fill="none" stroke="rgba(255,255,255,0.08)" stroke-width="16" stroke-linecap="round"/>
-              <!-- Colored Progress Arc -->
+          <div style="position:relative; width:240px; height:130px; display:flex; justify-content:center; align-items:center;">
+            <svg viewBox="0 0 240 135" width="240" height="135" style="overflow:visible;">
               <defs>
                 <linearGradient id="gauge-grad" x1="0%" y1="0%" x2="100%" y2="0%">
                   <stop offset="0%" stop-color="#10B981" />
-                  <stop offset="35%" stop-color="#F59E0B" />
-                  <stop offset="70%" stop-color="#F97316" />
+                  <stop offset="30%" stop-color="#06B6D4" />
+                  <stop offset="55%" stop-color="#F59E0B" />
+                  <stop offset="80%" stop-color="#F97316" />
                   <stop offset="100%" stop-color="#EF4444" />
                 </linearGradient>
+                <filter id="glow-crit" x="-20%" y="-20%" width="140%" height="140%">
+                  <feGaussianBlur stdDeviation="3" result="blur" />
+                  <feComposite in="SourceGraphic" in2="blur" operator="over" />
+                </filter>
               </defs>
-              <path id="gauge-progress-path" d="M 20 100 A 80 80 0 0 1 180 100" fill="none" stroke="url(#gauge-grad)" stroke-width="16" stroke-linecap="round" stroke-dasharray="251.3" stroke-dashoffset="35" style="transition: stroke-dashoffset 1.5s ease;"/>
-              <!-- Needle Pointer -->
-              <line id="gauge-needle" x1="100" y1="100" x2="100" y2="35" stroke="#FFF" stroke-width="3" stroke-linecap="round" style="transform-origin: 100px 100px; transform: rotate(65deg); transition: transform 1.5s cubic-bezier(0.34, 1.56, 0.64, 1); filter: drop-shadow(0 0 4px rgba(255,255,255,0.8));" />
-              <circle cx="100" cy="100" r="7" fill="#FFF" />
-              <circle cx="100" cy="100" r="3" fill="#0F172A" />
+
+              <!-- Outer Gauge Track -->
+              <path d="M 35 115 A 85 85 0 0 1 205 115" fill="none" stroke="rgba(255,255,255,0.06)" stroke-width="14" stroke-linecap="round"/>
+              
+              <!-- Colored Progress Arc -->
+              <path id="gauge-progress-path" d="M 35 115 A 85 85 0 0 1 205 115" fill="none" stroke="url(#gauge-grad)" stroke-width="14" stroke-linecap="round" stroke-dasharray="267" stroke-dashoffset="40" style="transition: stroke-dashoffset 1.4s ease; filter: drop-shadow(0 0 6px rgba(239, 68, 68, 0.4));"/>
+
+              <!-- Calibration Tick Lines -->
+              <!-- 0% Tick -->
+              <line x1="38" y1="115" x2="48" y2="115" stroke="rgba(255,255,255,0.4)" stroke-width="2"/>
+              <!-- 25% Tick -->
+              <line x1="59.9" y1="54.9" x2="67.0" y2="62.0" stroke="rgba(255,255,255,0.4)" stroke-width="2"/>
+              <!-- 50% Tick -->
+              <line x1="120" y1="30" x2="120" y2="40" stroke="rgba(255,255,255,0.4)" stroke-width="2"/>
+              <!-- 75% Tick -->
+              <line x1="180.1" y1="54.9" x2="173.0" y2="62.0" stroke="rgba(255,255,255,0.4)" stroke-width="2"/>
+              <!-- 100% Tick -->
+              <line x1="202" y1="115" x2="192" y2="115" stroke="rgba(255,255,255,0.4)" stroke-width="2"/>
+
+              <!-- Dial Tick Labels -->
+              <text x="24" y="130" fill="#10B981" font-size="9.5" font-weight="700" font-family="'JetBrains Mono', monospace">0</text>
+              <text x="50" y="46" fill="#06B6D4" font-size="8.5" font-weight="600" font-family="'JetBrains Mono', monospace">25</text>
+              <text x="113" y="22" fill="#F59E0B" font-size="8.5" font-weight="700" font-family="'JetBrains Mono', monospace">50</text>
+              <text x="178" y="46" fill="#F97316" font-size="8.5" font-weight="600" font-family="'JetBrains Mono', monospace">75</text>
+              <text x="204" y="130" fill="#EF4444" font-size="9.5" font-weight="700" font-family="'JetBrains Mono', monospace">100</text>
+
+              <!-- Needle Pointer Group (Pivoted at 120, 115) -->
+              <g id="gauge-needle-group" style="transform-origin: 120px 115px; transform: rotate(68deg); transition: transform 1.4s cubic-bezier(0.34, 1.56, 0.64, 1);">
+                <line x1="120" y1="115" x2="120" y2="40" stroke="#FFFFFF" stroke-width="3" stroke-linecap="round" style="filter: drop-shadow(0 0 4px rgba(255,255,255,0.9));"/>
+                <polygon points="117,48 120,34 123,48" fill="#EF4444" style="filter: drop-shadow(0 0 5px rgba(239, 68, 68, 0.9));"/>
+                <circle cx="120" cy="115" r="9" fill="#0F172A" stroke="#38BDF8" stroke-width="2.5" />
+                <circle cx="120" cy="115" r="4" fill="#EF4444" />
+              </g>
             </svg>
-            <div style="position:absolute; bottom:0; text-align:center;">
-              <span id="risk-score-number" style="font-size:1.85rem; font-weight:900; color:#FFF; font-family:'JetBrains Mono', monospace;">88</span>
-              <span style="font-size:0.9rem; color:var(--text-muted); font-weight:700;">/100</span>
-            </div>
           </div>
           
-          <div style="margin-top:0.75rem; text-align:center;">
-            <div id="risk-level-headline" style="font-size:0.875rem; font-weight:700; color:var(--sev-critical);">CRITICAL RISK (Active Exfiltration)</div>
-            <div style="font-size:0.725rem; color:var(--text-muted); margin-top:0.15rem;">Automated composite score based on IOC threat weights & privilege escalation.</div>
+          <!-- Dynamic Digital Score Readout -->
+          <div style="margin-top:0.25rem; display:flex; flex-direction:column; align-items:center; text-align:center;">
+            <div id="risk-score-pill" style="background:rgba(239, 68, 68, 0.12); border:1px solid rgba(239, 68, 68, 0.35); padding:0.2rem 0.85rem; border-radius:20px; display:inline-flex; align-items:baseline; gap:0.25rem;">
+              <span id="risk-score-number" style="font-size:1.75rem; font-weight:900; color:#EF4444; font-family:'JetBrains Mono', monospace; line-height:1;">88</span>
+              <span style="font-size:0.8rem; color:var(--text-muted); font-weight:700;">/ 100</span>
+            </div>
+            <div id="risk-level-headline" style="font-size:0.825rem; font-weight:700; color:var(--sev-critical); margin-top:0.35rem;">CRITICAL RISK (Active Exfiltration)</div>
+            <div style="font-size:0.7rem; color:var(--text-muted); margin-top:0.1rem;">Automated composite score based on IOC threat weights & privilege escalation.</div>
           </div>
         </div>
 
-        <div style="display:grid; grid-template-columns:1fr 1fr 1fr; gap:0.5rem; border-top:1px solid var(--border-color); padding-top:0.75rem; font-size:0.7rem;">
+        <div style="display:grid; grid-template-columns:1fr 1fr 1fr; gap:0.5rem; border-top:1px solid var(--border-color); padding-top:0.6rem; font-size:0.7rem; margin-top:0.4rem;">
           <div style="text-align:center;">
             <div style="color:var(--text-muted);">Initial Vector</div>
             <div style="font-weight:700; color:var(--sev-high);">RDP Brute Force</div>
@@ -554,8 +585,8 @@ async function loadDashboardData(caseId) {
 }
 
 function updateRiskGauge(findingsData, iocs, timeline) {
-  const findings = findingsData.findings || [];
-  let score = 20; // baseline
+  const findings = (findingsData && findingsData.findings) || [];
+  let score = 25; // baseline
 
   const critFindings = findings.filter(f => f.severity === 'Critical').length;
   const highFindings = findings.filter(f => f.severity === 'High').length;
@@ -568,13 +599,19 @@ function updateRiskGauge(findingsData, iocs, timeline) {
   // Speedometer Needle angle: 0 score = -90deg, 100 score = 90deg (Total 180deg sweep)
   const angle = -90 + (score / 100) * 180;
   
+  // Progress Arc Offset (Circumference is 267)
+  const offset = 267 - (score / 100) * 267;
+
   const scoreNumEl = document.getElementById('risk-score-number');
-  const needleEl = document.getElementById('gauge-needle');
+  const needleGroupEl = document.getElementById('gauge-needle-group');
+  const progressPathEl = document.getElementById('gauge-progress-path');
   const badgeTextEl = document.getElementById('risk-badge-text');
   const levelHeadline = document.getElementById('risk-level-headline');
+  const scorePillEl = document.getElementById('risk-score-pill');
 
   if (scoreNumEl) scoreNumEl.textContent = score;
-  if (needleEl) needleEl.style.transform = `rotate(${angle}deg)`;
+  if (needleGroupEl) needleGroupEl.style.transform = `rotate(${angle}deg)`;
+  if (progressPathEl) progressPathEl.style.strokeDashoffset = `${offset}`;
 
   if (badgeTextEl && levelHeadline) {
     if (score >= 75) {
@@ -582,16 +619,31 @@ function updateRiskGauge(findingsData, iocs, timeline) {
       badgeTextEl.textContent = 'CRITICAL THREAT';
       levelHeadline.style.color = 'var(--sev-critical)';
       levelHeadline.textContent = 'CRITICAL RISK (Active Exfiltration & Privilege Escalation)';
+      if (scoreNumEl) scoreNumEl.style.color = '#EF4444';
+      if (scorePillEl) {
+        scorePillEl.style.background = 'rgba(239, 68, 68, 0.15)';
+        scorePillEl.style.borderColor = 'rgba(239, 68, 68, 0.4)';
+      }
     } else if (score >= 50) {
       badgeTextEl.className = 'badge badge-high';
       badgeTextEl.textContent = 'HIGH THREAT';
       levelHeadline.style.color = 'var(--sev-high)';
       levelHeadline.textContent = 'HIGH RISK (Suspicious Privilege Reconnaissance)';
+      if (scoreNumEl) scoreNumEl.style.color = '#F97316';
+      if (scorePillEl) {
+        scorePillEl.style.background = 'rgba(249, 115, 22, 0.15)';
+        scorePillEl.style.borderColor = 'rgba(249, 115, 22, 0.4)';
+      }
     } else {
       badgeTextEl.className = 'badge badge-medium';
       badgeTextEl.textContent = 'ELEVATED';
       levelHeadline.style.color = 'var(--sev-medium)';
       levelHeadline.textContent = 'ELEVATED RISK (Preliminary Triage Underway)';
+      if (scoreNumEl) scoreNumEl.style.color = '#F59E0B';
+      if (scorePillEl) {
+        scorePillEl.style.background = 'rgba(245, 158, 11, 0.15)';
+        scorePillEl.style.borderColor = 'rgba(245, 158, 11, 0.4)';
+      }
     }
   }
 }
